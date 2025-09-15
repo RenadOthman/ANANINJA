@@ -20,7 +20,7 @@ HTML = '''
 <title>سجل معنا وفوز!</title>
 <style>
     body {
-        background-image: url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1600&q=80');
+        background-image: url('donuts');
         background-size: cover;
         font-family: Arial, sans-serif;
         display: flex;
