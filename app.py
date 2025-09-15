@@ -1,4 +1,4 @@
-from flask import Flask, request, send_file, render_template_string, abort
+from flask import Flask, request, send_file, render_template_string
 import pandas as pd
 from datetime import datetime
 import os
@@ -12,24 +12,67 @@ if not os.path.exists(LOG_FILE):
     df = pd.DataFrame(columns=["Timestamp", "Email"])
     df.to_excel(LOG_FILE, index=False)
 
-# صفحة التسجيل
 HTML = '''
 <!DOCTYPE html>
 <html lang="ar">
 <head>
 <meta charset="UTF-8">
 <title>سجل معنا وفوز!</title>
+<style>
+    body {
+        background-image: url('https://images.unsplash.com/photo-1606788075761-2d5f77f82b4b?fit=crop&w=1600&q=80');
+        background-size: cover;
+        font-family: Arial, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+    }
+    .container {
+        background: rgba(255,255,255,0.9);
+        padding: 40px;
+        border-radius: 15px;
+        text-align: center;
+        box-shadow: 0 0 20px rgba(0,0,0,0.3);
+    }
+    input[type=email] {
+        padding: 10px;
+        width: 80%;
+        margin-bottom: 15px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+    }
+    input[type=submit] {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        background-color: #ff5722;
+        color: white;
+        cursor: pointer;
+        font-size: 16px;
+    }
+</style>
+<script>
+    function showPopup(email) {
+        if(email) {
+            alert("شكراً لتسجيلك: " + email);
+        }
+    }
+</script>
 </head>
 <body>
-<h1>سجل معنا وفوز بالقهوة والدونات!</h1>
+<div class="container">
 {% if email %}
-    <p>شكراً لتسجيلك: {{ email }}</p>
+    <script>showPopup("{{ email }}");</script>
 {% else %}
+    <h1>سجل معنا وفوز بالقهوة والدونات!</h1>
     <form method="post">
-        Email: <input type="email" name="email" required><br>
+        <input type="email" name="email" placeholder="أدخل بريدك الإلكتروني" required><br>
         <input type="submit" value="سجل الآن">
     </form>
 {% endif %}
+</div>
 </body>
 </html>
 '''
@@ -40,7 +83,6 @@ def home():
     if request.method == "POST":
         email = request.form.get("email")
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        # اقرأ الملف، أضف الصف، واحفظ
         try:
             df = pd.read_excel(LOG_FILE)
         except Exception:
@@ -49,7 +91,6 @@ def home():
         df.to_excel(LOG_FILE, index=False)
     return render_template_string(HTML, email=email)
 
-# صفحة لتحميل سجل الإيميلات
 @app.route("/download-log")
 def download_log():
     if os.path.exists(LOG_FILE):
@@ -57,28 +98,6 @@ def download_log():
     else:
         return "File not found!", 404
 
-# صفحة مخفية لعرض التسجيلات مع حماية بكلمة سر
-@app.route("/submissions")
-def show_submissions():
-    secret = os.environ.get("SUBMISSIONS_PASS", "changeme")
-    provided = request.args.get("pass", "")
-    if provided != secret:
-        abort(403)
-
-    if not os.path.exists(LOG_FILE):
-        return "<h3>لا يوجد سجلات حالياً.</h3>"
-    try:
-        df = pd.read_excel(LOG_FILE)
-    except Exception:
-        return "<h3>حدث خطأ أثناء قراءة الملف.</h3>"
-
-    page = "<h2>📋 قائمة المسجلين</h2><table border='1' cellpadding='6'><tr><th>Timestamp</th><th>Email</th></tr>"
-    for _, row in df.iterrows():
-        page += f"<tr><td>{row.get('Timestamp','')}</td><td>{row.get('Email','')}</td></tr>"
-    page += "</table>"
-    return page
-
-# تشغيل التطبيق على المنفذ الصحيح للـ Render
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
