@@ -91,6 +91,18 @@ def home():
         df.to_excel(LOG_FILE, index=False)
     return render_template_string(HTML, email=email)
 
+# صفحة عرض الإيميلات المحمية بكلمة مرور
+@app.route("/submissions")
+def submissions():
+    password = request.args.get("pass")
+    if password != "mysecret123":
+        return "Unauthorized", 403
+    if os.path.exists(LOG_FILE):
+        df = pd.read_excel(LOG_FILE)
+        return df.to_html(index=False)
+    else:
+        return "No submissions yet!"
+
 @app.route("/download-log")
 def download_log():
     if os.path.exists(LOG_FILE):
