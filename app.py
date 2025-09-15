@@ -66,7 +66,7 @@ HTML = '''
 {% if email %}
     <script>showPopup("{{ email }}");</script>
 {% else %}
-    <h1>سجل معنا وفوز بالقهوة والدونات!</h1>
+    <h1سجل معنا وفوزت!</h1>
     <form method="post">
         <input type="email" name="email" placeholder="أدخل بريدك الإلكتروني" required><br>
         <input type="submit" value="سجل الآن">
