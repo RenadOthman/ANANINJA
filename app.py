@@ -17,7 +17,7 @@ HTML = '''
 <html lang="ar">
 <head>
 <meta charset="UTF-8">
-<title>سجل معنا وفوز!</title>
+<title>>سجّل معنا واستمتع بتوصيل غير محدود وقهوة بلا حدود!</title>
 <style>
     body {
         background-image: url('https://www2.0zz0.com/2025/09/16/11/929822793.png');
