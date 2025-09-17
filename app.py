@@ -88,10 +88,10 @@ HTML = '''
 <div class="container">
 {% if email %}
     <script>showPopup("{{ email|e }}");</script>
-    <h1>شكراً لتسجيلك!</h1>
+    <h1>  </h1>
     <p>تم استلام الايميل: <strong>{{ email|e }}</strong></p>
 {% else %}
-    <h1>سجل معنا وفوز!</h1>
+    <h1>سجّل معنا واستمتع بتوصيل غير محدود وقهوة بلا حدود!</h1>
     <form method="post">
         <input type="email" name="email" placeholder="أدخل بريدك الإلكتروني" required><br>
         <input type="submit" value="سجل الآن">
